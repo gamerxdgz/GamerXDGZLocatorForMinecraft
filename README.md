@@ -1,29 +1,35 @@
-# GamerXDGZLocatorForMinecraft
+## Compatibility
 
-A free, open-source and security-focused Minecraft player locator plugin.
+### Build compatibility
 
-## Features
+- Modern Paper-based Minecraft: supported build target
 
-- Player locator system
-- Nearby-player detection
-- Direction calculations
-- Distance calculations
-- Configurable detection range
-- Player locator toggle
-- Permission support
-- World support
-- Vanish awareness
-- Configurable update interval
-- Lightweight design
-- No advertisements
-- No telemetry
-- No external tracking
+### Runtime testing still required
 
-## Commands
+- Minecraft 1.8.8
+- Minecraft 1.12.2
+- Eaglercraft 1.8.8
+- Eaglercraft 1.12.2
 
-```text
-/locator
-/locator on
-/locator off
-/locator toggle
-/locator reload
+Eaglercraft compatibility depends on the server/proxy implementation.
+These versions are not advertised as verified until runtime testing
+has been completed.
+
+## Safety
+
+GamerXDGZLocatorForMinecraft is designed to be:
+
+- Free
+- Open source
+- Lightweight
+- Permission-based
+- Free of intentional telemetry
+- Free of intentional advertising
+- Free of intentional tracking
+- Free of hidden external services
+
+See `SECURITY.md` for more information.
+
+## License
+
+MIT License.

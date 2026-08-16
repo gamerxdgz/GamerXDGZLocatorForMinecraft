@@ -9,6 +9,9 @@ description: >
   A free, open-source, lightweight and security-focused
   Minecraft and Eaglercraft player locator plugin.
 
+  softdepend:
+  - EaglercraftXServer
+
 commands:
   locator:
     description: Manage the GamerXDGZ locator

@@ -1,11 +1,7 @@
 package com.gamerxdgz.locator;
 
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,23 +11,58 @@ public final class LocatorManager {
 
     private final GamerXDGZLocatorForMinecraft plugin;
 
-    private final Set<UUID> disabledPlayers = new HashSet<>();
+    private final Set<UUID> disabledPlayers =
+            new HashSet<>();
+
+    private final LocatorDisplay display;
 
     public LocatorManager(
             GamerXDGZLocatorForMinecraft plugin
     ) {
         this.plugin = plugin;
+
+        this.display =
+                LocatorDisplayFactory.create(plugin);
+    }
+
+    public boolean isLocatorEnabled(Player player) {
+
+        if (player == null) {
+            return false;
+        }
+
+        if (!plugin.getConfig().getBoolean(
+                "locator.enabled",
+                true
+        )) {
+            return false;
+        }
+
+        return !disabledPlayers.contains(
+                player.getUniqueId()
+        );
     }
 
     public boolean toggleLocator(Player player) {
 
-        if (isLocatorEnabled(player)) {
-            setLocatorEnabled(player, false);
+        if (player == null) {
             return false;
         }
 
-        setLocatorEnabled(player, true);
-        return true;
+        UUID uuid = player.getUniqueId();
+
+        if (disabledPlayers.contains(uuid)) {
+
+            disabledPlayers.remove(uuid);
+
+            return true;
+        }
+
+        disabledPlayers.add(uuid);
+
+        display.clear(player);
+
+        return false;
     }
 
     public void setLocatorEnabled(
@@ -43,226 +74,57 @@ public final class LocatorManager {
             return;
         }
 
+        UUID uuid = player.getUniqueId();
+
         if (enabled) {
-            disabledPlayers.remove(
-                    player.getUniqueId()
-            );
+
+            disabledPlayers.remove(uuid);
+
         } else {
-            disabledPlayers.add(
-                    player.getUniqueId()
-            );
+
+            disabledPlayers.add(uuid);
+
+            display.clear(player);
         }
     }
 
-  public boolean isLocatorEnabled(Player player) {
-
-    if (player == null) {
-        return false;
-    }
-
-    if (!plugin.getConfig().getBoolean(
-            "locator.enabled",
-            true
-    )) {
-        return false;
-    }
-
-    return !disabledPlayers.contains(
-            player.getUniqueId()
-    );
-}
-
-    public List<Player> getNearbyPlayers(
-            Player viewer
+    public void updateLocator(
+            Player player,
+            List<LocatorData> data
     ) {
 
-        if (viewer == null || !viewer.isOnline()) {
-            return Collections.emptyList();
+        if (player == null ||
+                !player.isOnline()) {
+            return;
         }
 
-        if (!isLocatorEnabled(viewer)) {
-            return Collections.emptyList();
+        if (!isLocatorEnabled(player)) {
+            return;
         }
 
-        String permission =
-                plugin.getConfig().getString(
-                        "security.permission",
-                        "gamerxdgzlocator.use"
-                );
-
-        boolean requirePermission =
-                plugin.getConfig().getBoolean(
-                        "security.require-permission",
-                        true
-                );
-
-        if (requirePermission &&
-                !viewer.hasPermission(permission)) {
-
-            return Collections.emptyList();
-        }
-
-        Location viewerLocation =
-                viewer.getLocation();
-
-        World viewerWorld =
-                viewer.getWorld();
-
-        if (viewerLocation == null ||
-                viewerWorld == null) {
-
-            return Collections.emptyList();
-        }
-
-        boolean sameWorldOnly =
-                plugin.getConfig().getBoolean(
-                        "performance.same-world-only",
-                        true
-                );
-
-        int range =
-                plugin.getConfig().getInt(
-                        "locator.range",
-                        128
-                );
-
-        int maxPlayers =
-                plugin.getConfig().getInt(
-                        "locator.max-players",
-                        20
-                );
-
-        if (maxPlayers < 1) {
-            return Collections.emptyList();
-        }
-
-        List<PlayerDistance> candidates =
-                new ArrayList<>();
-
-        for (Player target :
-                viewer.getServer().getOnlinePlayers()) {
-
-            if (target.equals(viewer)) {
-                continue;
-            }
-
-            if (!target.isOnline()) {
-                continue;
-            }
-
-            if (sameWorldOnly &&
-                    target.getWorld() != viewerWorld) {
-
-                continue;
-            }
-
-            boolean respectVanish =
-                    plugin.getConfig().getBoolean(
-                            "security.respect-vanish",
-                            true
-                    );
-
-            if (respectVanish &&
-                    target.hasMetadata("vanished")) {
-
-                continue;
-            }
-
-            Location targetLocation =
-                    target.getLocation();
-
-            if (targetLocation == null) {
-                continue;
-            }
-
-            double distanceSquared =
-                    viewerLocation.distanceSquared(
-                            targetLocation
-                    );
-
-            if (range > 0 &&
-                    distanceSquared >
-                            (double) range * range) {
-
-                continue;
-            }
-
-            candidates.add(
-                    new PlayerDistance(
-                            target,
-                            distanceSquared
-                    )
-            );
-        }
-
-        Collections.sort(
-                candidates,
-                (first, second) ->
-                        Double.compare(
-                                first.distanceSquared,
-                                second.distanceSquared
-                        )
+        display.update(
+                player,
+                data
         );
-
-        List<Player> result =
-                new ArrayList<>();
-
-        int limit =
-                Math.min(
-                        maxPlayers,
-                        candidates.size()
-                );
-
-        for (int i = 0; i < limit; i++) {
-
-            result.add(
-                    candidates.get(i).player
-            );
-        }
-
-        return result;
     }
 
-    /**
-     * Creates locator information for every
-     * nearby player.
-     */
-    public List<LocatorData> getLocatorData(
-            Player viewer
-    ) {
+    public void clearLocator(Player player) {
 
-        List<Player> nearbyPlayers =
-                getNearbyPlayers(viewer);
-
-        List<LocatorData> result =
-                new ArrayList<>();
-
-        for (Player target : nearbyPlayers) {
-
-            LocatorData data =
-                    LocatorCalculator.calculate(
-                            viewer,
-                            target
-                    );
-
-            result.add(data);
+        if (player == null) {
+            return;
         }
 
-        return result;
+        display.clear(player);
     }
 
-    private static final class PlayerDistance {
+    public void clearAll() {
 
-        private final Player player;
-        private final double distanceSquared;
+        for (Player player :
+                plugin.getServer().getOnlinePlayers()) {
 
-        private PlayerDistance(
-                Player player,
-                double distanceSquared
-        ) {
-            this.player = player;
-            this.distanceSquared =
-                    distanceSquared;
+            display.clear(player);
         }
+
+        disabledPlayers.clear();
     }
 }

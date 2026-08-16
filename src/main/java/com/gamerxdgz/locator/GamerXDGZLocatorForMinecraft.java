@@ -12,14 +12,24 @@ public final class GamerXDGZLocatorForMinecraft extends JavaPlugin {
 
         locatorManager = new LocatorManager(this);
 
-        getLogger().info("GamerXDGZLocatorForMinecraft has been enabled!");
+        if (getCommand("locator") != null) {
+            getCommand("locator").setExecutor(
+                    new LocatorCommand(this)
+            );
+        }
+
+        getLogger().info(
+                "GamerXDGZLocatorForMinecraft has been enabled!"
+        );
     }
 
     @Override
     public void onDisable() {
         locatorManager = null;
 
-        getLogger().info("GamerXDGZLocatorForMinecraft has been disabled!");
+        getLogger().info(
+                "GamerXDGZLocatorForMinecraft has been disabled!"
+        );
     }
 
     public LocatorManager getLocatorManager() {

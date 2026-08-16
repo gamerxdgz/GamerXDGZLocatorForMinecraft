@@ -1,25 +1,27 @@
 locator:
   enabled: true
 
-  # Maximum distance in blocks for detecting players.
+  # Maximum detection distance.
   range: 128
 
-  # How often the locator updates.
-  # 20 ticks = approximately 1 second.
+  # Update interval in server ticks.
   update-interval-ticks: 10
 
-  # Maximum number of players shown.
+  # Maximum players displayed per viewer.
   max-players: 20
 
 security:
-  # Permission required to use the locator.
   require-permission: true
 
   permission: gamerxdgzlocator.use
 
-  # Do not show players marked as vanished.
   respect-vanish: true
 
 performance:
-  # Only detect players in the same world.
   same-world-only: true
+
+  # Prevent excessively large detection ranges.
+  maximum-range: 256
+
+  # Prevent excessively fast updates.
+  minimum-update-interval-ticks: 5

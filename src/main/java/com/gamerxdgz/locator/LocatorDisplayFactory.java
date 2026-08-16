@@ -8,6 +8,14 @@ public final class LocatorDisplayFactory {
     public static LocatorDisplay create(
             GamerXDGZLocatorForMinecraft plugin
     ) {
-        return new FormattedLocatorDisplay();
+
+        LocatorPlatform platform =
+                plugin.getPlatformManager().getPlatform();
+
+        if (platform.supportsActionBar()) {
+            return new FormattedLocatorDisplay();
+        }
+
+        return new FallbackLocatorDisplay();
     }
 }

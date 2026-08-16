@@ -9,7 +9,6 @@ import java.util.List;
 public final class LocatorUpdater {
 
     private final GamerXDGZLocatorForMinecraft plugin;
-
     private final LocatorDisplay display;
 
     private BukkitTask task;
@@ -18,7 +17,8 @@ public final class LocatorUpdater {
             GamerXDGZLocatorForMinecraft plugin
     ) {
         this.plugin = plugin;
-        this.display = new ActionBarLocatorDisplay();
+        this.display =
+                LocatorDisplayFactory.create(plugin);
     }
 
     public void start() {

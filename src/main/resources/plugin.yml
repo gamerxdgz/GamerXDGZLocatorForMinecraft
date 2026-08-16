@@ -1,0 +1,25 @@
+name: GamerXDGZLocatorForMinecraft
+version: 1.0.0
+main: com.gamerxdgz.locator.GamerXDGZLocatorForMinecraft
+api-version: '1.13'
+
+author: GamerXD_GZ
+
+description: >
+  A free, open-source, lightweight and security-focused
+  Minecraft and Eaglercraft player locator plugin.
+
+commands:
+  locator:
+    description: Manage the GamerXDGZ locator
+    usage: /locator [on|off|toggle|reload]
+    permission: gamerxdgzlocator.use
+
+permissions:
+  gamerxdgzlocator.use:
+    description: Allows the player to use the locator
+    default: true
+
+  gamerxdgzlocator.reload:
+    description: Allows the player to reload the locator configuration
+    default: op

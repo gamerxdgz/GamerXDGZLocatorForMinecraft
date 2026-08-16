@@ -9,7 +9,8 @@ import java.util.List;
 public final class LocatorUpdater {
 
     private final GamerXDGZLocatorForMinecraft plugin;
-    private final LocatorDisplay display;
+
+    private final LocatorTracker tracker;
 
     private BukkitTask task;
 
@@ -17,8 +18,7 @@ public final class LocatorUpdater {
             GamerXDGZLocatorForMinecraft plugin
     ) {
         this.plugin = plugin;
-        this.display =
-                LocatorDisplayFactory.create(plugin);
+        this.tracker = new LocatorTracker(plugin);
     }
 
     public void start() {
@@ -37,36 +37,34 @@ public final class LocatorUpdater {
 
         task = Bukkit.getScheduler().runTaskTimer(
                 plugin,
-                this::update,
-                interval,
+                this::updatePlayers,
+                1L,
                 interval
         );
     }
 
-    private void update() {
-
-        LocatorManager manager =
-                plugin.getLocatorManager();
-
-        if (manager == null) {
-            return;
-        }
+    private void updatePlayers() {
 
         for (Player player :
                 Bukkit.getOnlinePlayers()) {
 
-            if (!manager.isLocatorEnabled(player)) {
-                display.clear(player);
+            if (!player.isOnline()) {
                 continue;
             }
 
-            List<LocatorData> data =
-                    manager.getLocatorData(player);
+            if (!plugin.getLocatorManager()
+                    .isLocatorEnabled(player)) {
+                continue;
+            }
 
-            display.update(
-                    player,
-                    data
-            );
+            List<LocatorData> nearbyPlayers =
+                    tracker.findNearbyPlayers(player);
+
+            plugin.getLocatorManager()
+                    .updateLocator(
+                            player,
+                            nearbyPlayers
+                    );
         }
     }
 
@@ -75,12 +73,6 @@ public final class LocatorUpdater {
         if (task != null) {
             task.cancel();
             task = null;
-        }
-
-        for (Player player :
-                Bukkit.getOnlinePlayers()) {
-
-            display.clear(player);
         }
     }
 }

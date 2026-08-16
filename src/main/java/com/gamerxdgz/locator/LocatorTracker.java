@@ -36,11 +36,26 @@ public final class LocatorTracker {
         World viewerWorld =
                 viewer.getWorld();
 
-        double range =
-                plugin.getConfig().getDouble(
-                        "locator.range",
-                        128.0
-                );
+      double range =
+        plugin.getConfig().getDouble(
+                "locator.range",
+                128.0
+        );
+
+double maximumRange =
+        plugin.getConfig().getDouble(
+                "performance.maximum-range",
+                256.0
+        );
+
+if (maximumRange < 1.0) {
+    maximumRange = 256.0;
+}
+
+range = Math.min(
+        range,
+        maximumRange
+);
 
         boolean sameWorldOnly =
                 plugin.getConfig().getBoolean(

@@ -10,7 +10,9 @@ public final class LocatorCommand implements CommandExecutor {
 
     private final GamerXDGZLocatorForMinecraft plugin;
 
-    public LocatorCommand(GamerXDGZLocatorForMinecraft plugin) {
+    public LocatorCommand(
+            GamerXDGZLocatorForMinecraft plugin
+    ) {
         this.plugin = plugin;
     }
 
@@ -22,6 +24,41 @@ public final class LocatorCommand implements CommandExecutor {
             String[] args
     ) {
 
+        if (args.length > 0 &&
+                args[0].equalsIgnoreCase("info")) {
+
+            sender.sendMessage(
+                    ChatColor.AQUA +
+                    "GamerXDGZLocatorForMinecraft"
+            );
+
+            sender.sendMessage(
+                    ChatColor.GRAY +
+                    "Platform: " +
+                    ChatColor.WHITE +
+                    plugin.getPlatformManager()
+                            .getPlatformName()
+            );
+
+            sender.sendMessage(
+                    ChatColor.GRAY +
+                    "ActionBar: " +
+                    ChatColor.WHITE +
+                    plugin.getPlatformManager()
+                            .supportsActionBar()
+            );
+
+            sender.sendMessage(
+                    ChatColor.GRAY +
+                    "Legacy clients: " +
+                    ChatColor.WHITE +
+                    plugin.getPlatformManager()
+                            .supportsLegacyClients()
+            );
+
+            return true;
+        }
+
         if (!(sender instanceof Player)) {
             sender.sendMessage(
                     ChatColor.RED +
@@ -32,7 +69,9 @@ public final class LocatorCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("gamerxdgzlocator.use")) {
+        if (!player.hasPermission(
+                "gamerxdgzlocator.use"
+        )) {
             player.sendMessage(
                     ChatColor.RED +
                     "You don't have permission to use the locator."
@@ -40,32 +79,31 @@ public final class LocatorCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length == 0 || args[0].equalsIgnoreCase("toggle")) {
+        if (args.length == 0 ||
+                args[0].equalsIgnoreCase("toggle")) {
 
-            boolean enabled = plugin.getLocatorManager()
-                    .toggleLocator(player);
+            boolean enabled =
+                    plugin.getLocatorManager()
+                            .toggleLocator(player);
 
-            if (enabled) {
-                player.sendMessage(
-                        ChatColor.GREEN +
-                        "Locator enabled."
-                );
-            } else {
-                player.sendMessage(
-                        ChatColor.YELLOW +
-                        "Locator disabled."
-                );
-            }
+            player.sendMessage(
+                    enabled
+                            ? ChatColor.GREEN +
+                              "Locator enabled."
+                            : ChatColor.YELLOW +
+                              "Locator disabled."
+            );
 
             return true;
         }
 
         if (args[0].equalsIgnoreCase("on")) {
 
-            plugin.getLocatorManager().setLocatorEnabled(
-                    player,
-                    true
-            );
+            plugin.getLocatorManager()
+                    .setLocatorEnabled(
+                            player,
+                            true
+                    );
 
             player.sendMessage(
                     ChatColor.GREEN +
@@ -77,10 +115,11 @@ public final class LocatorCommand implements CommandExecutor {
 
         if (args[0].equalsIgnoreCase("off")) {
 
-            plugin.getLocatorManager().setLocatorEnabled(
-                    player,
-                    false
-            );
+            plugin.getLocatorManager()
+                    .setLocatorEnabled(
+                            player,
+                            false
+                    );
 
             player.sendMessage(
                     ChatColor.YELLOW +
@@ -106,7 +145,7 @@ public final class LocatorCommand implements CommandExecutor {
 
             player.sendMessage(
                     ChatColor.GREEN +
-                    "GamerXDGZLocatorForMinecraft configuration reloaded."
+                    "Configuration reloaded."
             );
 
             return true;
@@ -114,7 +153,7 @@ public final class LocatorCommand implements CommandExecutor {
 
         player.sendMessage(
                 ChatColor.RED +
-                "Usage: /locator [on|off|toggle|reload]"
+                "Usage: /locator [on|off|toggle|reload|info]"
         );
 
         return true;

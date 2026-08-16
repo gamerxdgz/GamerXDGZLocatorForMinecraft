@@ -6,33 +6,74 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public final class LocatorManager {
 
     private final GamerXDGZLocatorForMinecraft plugin;
 
+    private final Set<UUID> disabledPlayers = new HashSet<>();
+
     public LocatorManager(GamerXDGZLocatorForMinecraft plugin) {
         this.plugin = plugin;
     }
 
-    /**
-     * Gets players that are within the configured locator range.
-     *
-     * @param viewer the player using the locator
-     * @return a safe list of nearby players
-     */
+    public boolean toggleLocator(Player player) {
+
+        if (isLocatorEnabled(player)) {
+            setLocatorEnabled(player, false);
+            return false;
+        }
+
+        setLocatorEnabled(player, true);
+        return true;
+    }
+
+    public void setLocatorEnabled(Player player, boolean enabled) {
+
+        if (player == null) {
+            return;
+        }
+
+        if (enabled) {
+            disabledPlayers.remove(player.getUniqueId());
+        } else {
+            disabledPlayers.add(player.getUniqueId());
+        }
+    }
+
+    public boolean isLocatorEnabled(Player player) {
+
+        if (player == null) {
+            return false;
+        }
+
+        return !disabledPlayers.contains(player.getUniqueId());
+    }
+
     public List<Player> getNearbyPlayers(Player viewer) {
 
         if (viewer == null || !viewer.isOnline()) {
             return Collections.emptyList();
         }
 
-        if (!viewer.hasPermission(
-                plugin.getConfig().getString(
+        if (!isLocatorEnabled(viewer)) {
+            return Collections.emptyList();
+        }
+
+        String permission = plugin.getConfig()
+                .getString(
                         "security.permission",
                         "gamerxdgzlocator.use"
-                ))) {
+                );
+
+        if (plugin.getConfig()
+                .getBoolean("security.require-permission", true)
+                && !viewer.hasPermission(permission)) {
+
             return Collections.emptyList();
         }
 
@@ -44,13 +85,22 @@ public final class LocatorManager {
         }
 
         boolean sameWorldOnly = plugin.getConfig()
-                .getBoolean("performance.same-world-only", true);
+                .getBoolean(
+                        "performance.same-world-only",
+                        true
+                );
 
         int range = plugin.getConfig()
-                .getInt("locator.range", 128);
+                .getInt(
+                        "locator.range",
+                        128
+                );
 
         int maxPlayers = plugin.getConfig()
-                .getInt("locator.max-players", 20);
+                .getInt(
+                        "locator.max-players",
+                        20
+                );
 
         if (maxPlayers < 1) {
             return Collections.emptyList();
@@ -68,13 +118,18 @@ public final class LocatorManager {
                 continue;
             }
 
-            if (sameWorldOnly && target.getWorld() != viewerWorld) {
+            if (sameWorldOnly &&
+                    target.getWorld() != viewerWorld) {
                 continue;
             }
 
             if (plugin.getConfig()
-                    .getBoolean("security.respect-vanish", true)
+                    .getBoolean(
+                            "security.respect-vanish",
+                            true
+                    )
                     && target.hasMetadata("vanished")) {
+
                 continue;
             }
 
@@ -87,12 +142,17 @@ public final class LocatorManager {
             double distanceSquared =
                     viewerLocation.distanceSquared(targetLocation);
 
-            if (range > 0 && distanceSquared > (double) range * range) {
+            if (range > 0 &&
+                    distanceSquared > (double) range * range) {
+
                 continue;
             }
 
             candidates.add(
-                    new PlayerDistance(target, distanceSquared)
+                    new PlayerDistance(
+                            target,
+                            distanceSquared
+                    )
             );
         }
 
@@ -107,7 +167,10 @@ public final class LocatorManager {
 
         List<Player> result = new ArrayList<>();
 
-        int limit = Math.min(maxPlayers, candidates.size());
+        int limit = Math.min(
+                maxPlayers,
+                candidates.size()
+        );
 
         for (int i = 0; i < limit; i++) {
             result.add(candidates.get(i).player);

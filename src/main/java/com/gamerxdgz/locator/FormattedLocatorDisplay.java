@@ -14,28 +14,26 @@ public final class FormattedLocatorDisplay
             List<LocatorData> data
     ) {
 
-        if (viewer == null ||
-                !viewer.isOnline()) {
+        if (viewer == null || !viewer.isOnline()) {
             return;
         }
 
-        String bar =
-                LocatorBar.create(
-                        viewer,
-                        data
-                );
-
-        viewer.sendActionBar(
-                ChatColor.WHITE +
-                bar
+        String bar = LocatorBar.create(
+                viewer,
+                data
         );
+
+        String message =
+                ChatColor.WHITE +
+                bar;
+
+        viewer.sendActionBar(message);
     }
 
     @Override
     public void clear(Player viewer) {
 
-        if (viewer == null ||
-                !viewer.isOnline()) {
+        if (viewer == null || !viewer.isOnline()) {
             return;
         }
 

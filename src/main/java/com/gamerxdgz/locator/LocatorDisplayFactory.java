@@ -8,6 +8,6 @@ public final class LocatorDisplayFactory {
     public static LocatorDisplay create(
             GamerXDGZLocatorForMinecraft plugin
     ) {
-        return new ActionBarLocatorDisplay();
+        return new FormattedLocatorDisplay();
     }
 }

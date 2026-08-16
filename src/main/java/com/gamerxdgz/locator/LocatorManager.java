@@ -54,16 +54,23 @@ public final class LocatorManager {
         }
     }
 
-    public boolean isLocatorEnabled(Player player) {
+  public boolean isLocatorEnabled(Player player) {
 
-        if (player == null) {
-            return false;
-        }
-
-        return !disabledPlayers.contains(
-                player.getUniqueId()
-        );
+    if (player == null) {
+        return false;
     }
+
+    if (!plugin.getConfig().getBoolean(
+            "locator.enabled",
+            true
+    )) {
+        return false;
+    }
+
+    return !disabledPlayers.contains(
+            player.getUniqueId()
+    );
+}
 
     public List<Player> getNearbyPlayers(
             Player viewer

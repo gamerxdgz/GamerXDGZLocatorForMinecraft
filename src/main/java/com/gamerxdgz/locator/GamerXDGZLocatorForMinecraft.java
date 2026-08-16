@@ -19,6 +19,10 @@ public final class GamerXDGZLocatorForMinecraft extends JavaPlugin {
             getCommand("locator").setExecutor(
                     new LocatorCommand(this)
             );
+        } else {
+            getLogger().severe(
+                    "The /locator command is missing from plugin.yml!"
+            );
         }
 
         locatorUpdater =
@@ -27,7 +31,7 @@ public final class GamerXDGZLocatorForMinecraft extends JavaPlugin {
         locatorUpdater.start();
 
         getLogger().info(
-                "GamerXDGZLocatorForMinecraft has been enabled!"
+                "GamerXDGZLocatorForMinecraft enabled."
         );
     }
 
@@ -42,7 +46,7 @@ public final class GamerXDGZLocatorForMinecraft extends JavaPlugin {
         locatorManager = null;
 
         getLogger().info(
-                "GamerXDGZLocatorForMinecraft has been disabled!"
+                "GamerXDGZLocatorForMinecraft disabled."
         );
     }
 

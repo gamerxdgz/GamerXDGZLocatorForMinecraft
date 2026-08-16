@@ -24,6 +24,7 @@ public final class LocatorCommand implements CommandExecutor {
             String[] args
     ) {
 
+        // /locator info
         if (args.length > 0 &&
                 args[0].equalsIgnoreCase("info")) {
 
@@ -56,29 +57,53 @@ public final class LocatorCommand implements CommandExecutor {
                             .supportsLegacyClients()
             );
 
+            sender.sendMessage(
+                    ChatColor.GRAY +
+                    "Eagler integration: " +
+                    ChatColor.WHITE +
+                    plugin.getEaglerIntegrationManager()
+                            .getPlatformName()
+            );
+
+            sender.sendMessage(
+                    ChatColor.GRAY +
+                    "EaglerXServer detected: " +
+                    ChatColor.WHITE +
+                    plugin.getEaglerIntegrationManager()
+                            .isAvailable()
+            );
+
             return true;
         }
 
+        // Commands below this point require a player.
         if (!(sender instanceof Player)) {
+
             sender.sendMessage(
                     ChatColor.RED +
                     "This command can only be used by a player."
             );
+
             return true;
         }
 
         Player player = (Player) sender;
 
+        // Permission check.
         if (!player.hasPermission(
                 "gamerxdgzlocator.use"
         )) {
+
             player.sendMessage(
                     ChatColor.RED +
                     "You don't have permission to use the locator."
             );
+
             return true;
         }
 
+        // /locator
+        // /locator toggle
         if (args.length == 0 ||
                 args[0].equalsIgnoreCase("toggle")) {
 
@@ -86,17 +111,25 @@ public final class LocatorCommand implements CommandExecutor {
                     plugin.getLocatorManager()
                             .toggleLocator(player);
 
-            player.sendMessage(
-                    enabled
-                            ? ChatColor.GREEN +
-                              "Locator enabled."
-                            : ChatColor.YELLOW +
-                              "Locator disabled."
-            );
+            if (enabled) {
+
+                player.sendMessage(
+                        ChatColor.GREEN +
+                        "Locator enabled."
+                );
+
+            } else {
+
+                player.sendMessage(
+                        ChatColor.YELLOW +
+                        "Locator disabled."
+                );
+            }
 
             return true;
         }
 
+        // /locator on
         if (args[0].equalsIgnoreCase("on")) {
 
             plugin.getLocatorManager()
@@ -113,6 +146,7 @@ public final class LocatorCommand implements CommandExecutor {
             return true;
         }
 
+        // /locator off
         if (args[0].equalsIgnoreCase("off")) {
 
             plugin.getLocatorManager()
@@ -129,15 +163,18 @@ public final class LocatorCommand implements CommandExecutor {
             return true;
         }
 
+        // /locator reload
         if (args[0].equalsIgnoreCase("reload")) {
 
             if (!player.hasPermission(
                     "gamerxdgzlocator.reload"
             )) {
+
                 player.sendMessage(
                         ChatColor.RED +
                         "You don't have permission to reload the locator."
                 );
+
                 return true;
             }
 
@@ -151,6 +188,7 @@ public final class LocatorCommand implements CommandExecutor {
             return true;
         }
 
+        // Unknown command.
         player.sendMessage(
                 ChatColor.RED +
                 "Usage: /locator [on|off|toggle|reload|info]"

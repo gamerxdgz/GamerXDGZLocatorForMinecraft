@@ -6,11 +6,15 @@ public final class GamerXDGZLocatorForMinecraft extends JavaPlugin {
 
     private LocatorManager locatorManager;
     private LocatorUpdater locatorUpdater;
+    private LocatorPlatformManager platformManager;
 
     @Override
     public void onEnable() {
 
         saveDefaultConfig();
+
+        platformManager =
+                new LocatorPlatformManager(this);
 
         locatorManager =
                 new LocatorManager(this);
@@ -33,6 +37,11 @@ public final class GamerXDGZLocatorForMinecraft extends JavaPlugin {
         getLogger().info(
                 "GamerXDGZLocatorForMinecraft enabled."
         );
+
+        getLogger().info(
+                "Platform: "
+                        + platformManager.getPlatformName()
+        );
     }
 
     @Override
@@ -44,6 +53,7 @@ public final class GamerXDGZLocatorForMinecraft extends JavaPlugin {
 
         locatorUpdater = null;
         locatorManager = null;
+        platformManager = null;
 
         getLogger().info(
                 "GamerXDGZLocatorForMinecraft disabled."
@@ -56,5 +66,9 @@ public final class GamerXDGZLocatorForMinecraft extends JavaPlugin {
 
     public LocatorUpdater getLocatorUpdater() {
         return locatorUpdater;
+    }
+
+    public LocatorPlatformManager getPlatformManager() {
+        return platformManager;
     }
 }

@@ -10,12 +10,15 @@ public final class LocatorUpdater {
 
     private final GamerXDGZLocatorForMinecraft plugin;
 
+    private final LocatorDisplay display;
+
     private BukkitTask task;
 
     public LocatorUpdater(
             GamerXDGZLocatorForMinecraft plugin
     ) {
         this.plugin = plugin;
+        this.display = new ActionBarLocatorDisplay();
     }
 
     public void start() {
@@ -32,13 +35,11 @@ public final class LocatorUpdater {
             interval = 1L;
         }
 
-        final long updateInterval = interval;
-
         task = Bukkit.getScheduler().runTaskTimer(
                 plugin,
                 this::update,
-                updateInterval,
-                updateInterval
+                interval,
+                interval
         );
     }
 
@@ -55,19 +56,17 @@ public final class LocatorUpdater {
                 Bukkit.getOnlinePlayers()) {
 
             if (!manager.isLocatorEnabled(player)) {
+                display.clear(player);
                 continue;
             }
 
             List<LocatorData> data =
                     manager.getLocatorData(player);
 
-            /*
-             * HUD/display integration will use
-             * this data in a later step.
-             */
-            if (data.isEmpty()) {
-                continue;
-            }
+            display.update(
+                    player,
+                    data
+            );
         }
     }
 
@@ -76,6 +75,12 @@ public final class LocatorUpdater {
         if (task != null) {
             task.cancel();
             task = null;
+        }
+
+        for (Player player :
+                Bukkit.getOnlinePlayers()) {
+
+            display.clear(player);
         }
     }
 }

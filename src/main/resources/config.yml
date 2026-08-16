@@ -1,67 +1,25 @@
-# ============================================================
-# GamerXDGZLocatorForMinecraft
-# Version: 1.0.0
-#
-# Free, open-source and security-focused.
-# ============================================================
-
 locator:
-  # Whether the locator is enabled by default.
   enabled: true
 
-  # Maximum distance at which players can appear.
-  # Set to 0 for unlimited distance.
+  # Maximum distance in blocks for detecting players.
   range: 128
 
-  # How frequently the locator updates.
-  # Lower values update more often but use more resources.
+  # How often the locator updates.
+  # 20 ticks = approximately 1 second.
   update-interval-ticks: 10
 
-  # Whether to show player names.
-  show-names: true
-
-  # Whether to show player distance.
-  show-distance: true
-
-  # Maximum number of players displayed at once.
+  # Maximum number of players shown.
   max-players: 20
 
-display:
-  # Text used for the player's own position.
-  self-marker: "▲"
-
-  # Text used for other players.
-  player-marker: "●"
-
-  # Text shown when there are no nearby players.
-  no-players: "No nearby players"
-
-  # Distance unit:
-  # BLOCKS = Minecraft blocks
-  distance-unit: "BLOCKS"
-
-worlds:
-  # If true, the locator works in every world
-  # unless a world is explicitly disabled below.
-  enabled-by-default: true
-
-  # Worlds where the locator should be disabled.
-  disabled: []
-
 security:
-  # Prevent players from seeing players who are hidden.
-  respect-vanish: true
-
-  # Prevent locator information from being sent
-  # when the player does not have permission.
+  # Permission required to use the locator.
   require-permission: true
 
-  # Permission required to use the locator.
-  permission: "gamerxdgzlocator.use"
+  permission: gamerxdgzlocator.use
+
+  # Do not show players marked as vanished.
+  respect-vanish: true
 
 performance:
-  # Maximum number of locator calculations per update.
-  max-calculations-per-tick: 100
-
-  # Don't calculate players who are in different worlds.
+  # Only detect players in the same world.
   same-world-only: true
